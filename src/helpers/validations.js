@@ -9,7 +9,7 @@ import env from '../../env';
    */
 const saltRounds = 10;
 const salt = bcrypt.genSaltSync(saltRounds);
-const hashPassword = password => bcrypt.hashSync(password, salt);
+const hashPassword = (password) => bcrypt.hashSync(password, salt);
 
 /**
    * comparePassword
@@ -17,9 +17,7 @@ const hashPassword = password => bcrypt.hashSync(password, salt);
    * @param {string} password
    * @returns {Boolean} return True or False
    */
-const comparePassword = (hashedPassword, password) => {
-  return bcrypt.compareSync(password, hashedPassword);
-};
+const comparePassword = (hashedPassword, password) => bcrypt.compareSync(password, hashedPassword);
 
 /**
    * isValidEmail helper method
@@ -77,7 +75,7 @@ const generateUserToken = (email, id, is_admin, first_name, last_name) => {
     user_id: id,
     is_admin,
     first_name,
-    last_name,
+    last_name
   },
   env.secret, { expiresIn: '3d' });
   return token;
@@ -91,5 +89,5 @@ export {
   validatePassword,
   isEmpty,
   empty,
-  generateUserToken,
+  generateUserToken
 };

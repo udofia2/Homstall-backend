@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import moment from 'moment';
 
 import dbQuery from '../db/dev/dbQuery';
@@ -9,11 +8,11 @@ import {
   isValidEmail,
   validatePassword,
   isEmpty,
-  generateUserToken,
+  generateUserToken
 } from '../helpers/validations';
 
 import {
-  errorMessage, successMessage, status,
+  errorMessage, successMessage, status
 } from '../helpers/status';
 
 /**
@@ -24,7 +23,7 @@ import {
    */
 const createUser = async (req, res) => {
   const {
-    email, first_name, last_name, password,
+    email, first_name, last_name, password
   } = req.body;
 
   const created_on = moment(new Date());
@@ -110,10 +109,7 @@ const siginUser = async (req, res) => {
   }
 };
 
-
-
-
 export {
   createUser,
-  siginUser,
+  siginUser
 };
