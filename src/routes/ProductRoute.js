@@ -16,7 +16,7 @@ const { protect, authorize } = require('../middlewares/verifyAuth');
 router
   .route('/')
   .get(getProducts)
-  .post(protect, multerUploads, createProduct);
+  .post(protect, authorize('farmer', 'admin'), multerUploads, createProduct);
 
 router
   .route('/:slug')
