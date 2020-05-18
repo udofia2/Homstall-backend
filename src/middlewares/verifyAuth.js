@@ -1,41 +1,50 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import {
-  errorMessage, status
-} from '../helpers/status';
+const jwt = require('jsonwebtoken');
+const asyncHandler = require('./async');
+const ErrorResponse = require('../helpers/errorResponse');
+const User = require('../models/User');
 
-import env from '../../env';
+// Protect routes
+exports.protect = asyncHandler(async (req, res, next) => {
+  let token;
 
-dotenv.config();
+  if (
+    req.headers.authorization
+    && req.headers.authorization.startsWith('Bearer')
+  ) {
+    // Set token from Bearer token in header
+    token = req.headers.authorization.split(' ')[1] || req.cookies.token;
+  }
+  // Set token from cookie
+  else if (req.cookies.token) {
+    token = req.cookies.token;
+  }
 
-/**
-   * Verify Token
-   * @param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @returns {object|void} response object
-   */
-
-const verifyToken = async (req, res, next) => {
-  const { token } = req.headers;
+  // Make sure token exists
   if (!token) {
-    errorMessage.error = 'Token not provided';
-    return res.status(status.bad).send(errorMessage);
+    return next(new ErrorResponse('Not authorized to access this route', 401));
   }
-  try {
-    const decoded = jwt.verify(token, process.env.SECRET);
-    req.user = {
-      email: decoded.email,
-      user_id: decoded.user_id,
-      is_admin: decoded.is_admin,
-      first_name: decoded.first_name,
-      last_name: decoded.last_name
-    };
-    next();
-  } catch (error) {
-    errorMessage.error = 'Authentication Failed';
-    return res.status(status.unauthorized).send(errorMessage);
-  }
-};
 
-export default verifyToken;
+  try {
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = await User.findById(decoded.id);
+
+    next();
+  } catch (err) {
+    return next(new ErrorResponse('Not authorized to access this route', 401));
+  }
+});
+
+// Grant access to specific roles
+exports.authorize = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return next(
+      new ErrorResponse(
+        `User role ${req.user.role} is not authorized to access this route`,
+        403
+      )
+    );
+  }
+  next();
+};
