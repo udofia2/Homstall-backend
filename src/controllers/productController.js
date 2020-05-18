@@ -1,4 +1,3 @@
-const path = require('path');
 const ErrorResponse = require('../helpers/errorResponse');
 const asyncHandler = require('../middlewares/async');
 const Product = require('../models/Product');
@@ -8,7 +7,7 @@ const { uploader } = require('../config/cloudinaryConfig');
 // @desc      Get all products
 // @route     GET /api/v1/products
 // @access    Public
-exports.getProducts = asyncHandler(async (req, res, next) => {
+exports.getProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({});
   res.status(200).json({ success: true, data: products });
 });
@@ -32,23 +31,22 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @route     POST /api/v1/products
 // @access    Private
 exports.createProduct = asyncHandler(async (req, res, next) => {
+  // verify user is a farmer or admin
+  if (req.user.role !== 'farmer' || 'admin') {
+    return next(
+      new ErrorResponse(
+        'The user with not authorized',
+        400
+      )
+    );
+  }
   // Add user to req,body
   req.body.user = req.user.id;
-  // verify user is a farmer or admin
-  //   if (req.user.role !== 'farmer' || 'admin') {
-  //     return next(
-  //       new ErrorResponse(
-  //         `The user with not authorized`,
-  //         400
-  //       )
-  //     );
-  //   }
   if (req.file) {
     const file = dataUri(req).content;
     const result = await uploader.upload(file);
     req.body.photoUrl = result.url;
   }
-  console.log(req.body);
   const product = await Product.create(req.body);
 
   res.status(201).json({

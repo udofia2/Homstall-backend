@@ -55,7 +55,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 // @desc      Log user out / clear cookie
 // @route     GET /api/v1/auth/logout
 // @access    Private
-exports.logout = asyncHandler(async (req, res, next) => {
+exports.logout = asyncHandler(async (req, res) => {
   res.cookie('token', 'none', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true
@@ -70,7 +70,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
 // @desc      Get current logged in user
 // @route     POST /api/v1/auth/me
 // @access    Private
-exports.getMe = asyncHandler(async (req, res, next) => {
+exports.getMe = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
 
   res.status(200).json({
@@ -82,7 +82,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 // @desc      Update user details
 // @route     PUT /api/v1/auth/updatedetails
 // @access    Private
-exports.updateDetails = asyncHandler(async (req, res, next) => {
+exports.updateDetails = asyncHandler(async (req, res) => {
   const fieldsToUpdate = {
     name: req.body.name,
     email: req.body.email
