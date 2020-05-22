@@ -36,7 +36,7 @@ After clonning the repo to your local machine and moving into the cloned folder,
 
 All tests should be written in the `__tests__' folder. There's a sample in there.
 
-This starter uses [Parcel](https://parceljs.org/getting_started.html) as the bundler. It is much simpler that WebPack and the others
+This starter uses [Parcel](https://parceljs.org/getting_started.html) as the bundler. It is much simpler than WebPack and the others
 
 #### Hints
 
